@@ -8,35 +8,32 @@ from pymilvus import (
 
 # Crystal memory connection config
 CrystalMemory = dict(
-        alias='CrystalMemory',
-        host='localhost',
+        alias='default',
+        host='0.0.0.0',
         port=19530,
     )
 
 
 # Status collections
-def Collection_Athena_status():
+def Collection_Test():
     pk = FieldSchema(
             name='pk',
             dtype=DataType.INT64,
             is_primary=True
         )
-    athena_status = FieldSchema(
-            name='athena_status',
-            dtype=DataType.VARCHAR,
-        )
-    last_updated = FieldSchema(
-            name='last_updated',
-            dtype=DataType.FLOAT,
+    test_vec = FieldSchema(
+            name='test_vec',
+            dtype=DataType.FLOAT_VECTOR,
+            dim=2
         )
     schema = CollectionSchema(
-            fields=[pk, athena_status, last_updated],
-            description="Athena's current status"
+            fields=[pk, test_vec],
+            description="Athena test collection"
         )
-    collection_name = 'Athenas_status'
+    collection_name = 'Athenas_test'
     Athena_status_collection = Collection(
             name=collection_name,
             schema=schema,
-            using='CrystalMemory',
+            using=CrystalMemory['alias'],
         )
     return Athena_status_collection

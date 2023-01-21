@@ -17,6 +17,6 @@ RUN pip install --upgrade pip
 RUN pip install -r /Athena/requirements.txt 
 #expose and run
 EXPOSE 80 3500
-CMD ["python","-V"]
+CMD ["/bin/bash"]
 
 
