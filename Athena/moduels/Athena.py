@@ -12,11 +12,13 @@ class Athena():
     from from memory and networks to cues and other services required for
     correct operation.
     """
-    def __init__(self, logging=False):
+    def __init__(self, seed=0, logging=False):
+        self.seed = seed
         self.Logger = _WANDBLogger() if logging else None
         self.FlashMemory = _FlashMemory()
         self.CrystalMemory = _CrystalMemory()
         self.Orchistrator = _Orchistrator(
+                self.seed,
                 self.Logger,
                 self.FlashMemory,
                 self.CrystalMemory

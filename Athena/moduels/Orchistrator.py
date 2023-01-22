@@ -3,13 +3,19 @@ from moduels.input.Text.Text import _Input_text
 
 class _Orchistrator():
     """"""
-    def __init__(self, Logger, FlashMemory, CrystalMemory):
+    def __init__(self, seed, Logger, FlashMemory, CrystalMemory):
+        self.seed = seed,
         self.Logger = Logger
         self.FlashMemory = FlashMemory
         self.CrystalMemory = CrystalMemory
         #
         self.input_moduels = [
-                _Input_text(self.Logger, self.FlashMemory, self.CrystalMemory),
+                _Input_text(
+                    self.seed,
+                    self.Logger,
+                    self.FlashMemory,
+                    self.CrystalMemory
+                ),
             ]
         self.latent_moduels = [
             ]
