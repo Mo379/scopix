@@ -11,13 +11,14 @@ class _Input_text():
         self.CrystalMemory = CrystalMemory
         self.Constructor = Constructor(
                 self.seed,
-                n_hidden,
-                hidden_size,
-                output_size,
-                batch_dim_size,
-                input_dim_size,
-                Logger,
+                self.Logger,
+                n_hidden=4,
+                hidden_size=4,
+                output_size=2,
+                batch_dim_size=32,
+                input_dim_size=4,
             )
+        self.init_fn, self.apply_fn, self.params = self.Constructor._construct()
 
     def _waking_fun(self):
         """ The waking function of the text input sensor
@@ -29,7 +30,8 @@ class _Input_text():
     def _learning_fun(self):
         """ The waking function of the text input sensor
         """
-        pass
+        self.Constructor._log_parameters(self.params)
+        print('params_logged')
 
     def _sleeping_fun(self):
         """ The input have no sleeping functions

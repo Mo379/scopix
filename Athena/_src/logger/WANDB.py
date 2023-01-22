@@ -38,15 +38,20 @@ class _WANDBLogger():
     def _log(self, dictionary):
         self.run.log(dictionary)
 
+    def _log_img(self, name, src):
+        self.run.log({
+            name: wandb.Image(src)
+        })
+
     def _log_arr_video(self, name, arr, full_sys_path):
         imageio.mimsave(
-                os.path.join(self.log_dir, f"videos/{self.log_id}.gif"),
+                os.path.join(self.vid_dir, f"{self.log_id}.gif"),
                 [np.array(img) for i, img in enumerate(arr) if i % 1 == 0],
                 fps=30
         )
         self.run.log({
             name: wandb.video(
-                os.path.join(self.log_dir, f"videos/{self.log_id}.gif"),
+                os.path.join(self.vid_dir, f"{self.log_id}.gif"),
                 full_sys_path,
                 fps=30,
                 format='gif'

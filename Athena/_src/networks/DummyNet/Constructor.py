@@ -3,29 +3,31 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 import graphviz
-from DummyNet import DummyNet
+from _src.networks.DummyNet.DummyNet import DummyNet
 
 
 class Constructor():
     def __init__(
             self,
             seed,
+            Logger,
             n_hidden,
             hidden_size,
             output_size,
             batch_dim_size,
             input_dim_size,
-            Logger,
         ):
         """Testing the DummyNet network
         """
         self.seed = seed
+        self.Logger = Logger
+        #
         self.n_hidden = n_hidden
         self.hidden_size = hidden_size
         self.output_size = output_size
         self.B = batch_dim_size
         self.V = input_dim_size
-        self.Logger = Logger
+        #
         self.NetName = DummyNet.NetName
 
     def _construct(self):
@@ -40,12 +42,12 @@ class Constructor():
         example_batch = jax.random.normal(key, (self.B, self.V))
         model_init, model_apply = hk.transform(net_module, apply_rng=True)
         model_params = model_init(key, example_batch)
-        example = model_apply(model_params, key, example_batch)
         if self.Logger:
             self._visualise(key, model_apply, model_params, example_batch)
-        print(example.shape)
-        #print(model_params)
-        #print(example)
+            self.Logger._log_img(
+                    'Model_graphs',
+                    os.path.join(self.Logger.img_dir, self.NetName+'.png')
+                )
         return model_init, model_apply, model_params
 
     # Visualise the model
@@ -55,11 +57,21 @@ class Constructor():
             )
         try:
             graphviz.Source(dot).render(
-                    os.path.join(self.Logger.img_dir, self.NetName)
+                    os.path.join(self.Logger.img_dir, self.NetName),
+                    engine='dot',
+                    format='png'
                 )
             result = True
         except Exception:
             result = False
         return result
+
+    def _log_parameters(self, parameters):
+        if self.Logger:
+            for layer in parameters:
+                for sub_params in parameters[layer]:
+                    self.Logger._log_params(
+                            layer+'/'+sub_params, parameters[layer][sub_params]
+                        )
 
 
