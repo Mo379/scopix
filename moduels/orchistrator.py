@@ -3,6 +3,7 @@ from moduels.input.Text.Text import _Input_text
 
 class _Orchistrator():
     """"""
+
     def __init__(self, seed, Logger, FlashMemory, CrystalMemory):
         self.seed = seed
         self.Logger = Logger
@@ -10,17 +11,17 @@ class _Orchistrator():
         self.CrystalMemory = CrystalMemory
         #
         self.input_moduels = [
-                _Input_text(
-                    self.seed,
-                    self.Logger,
-                    self.FlashMemory,
-                    self.CrystalMemory
-                ),
-            ]
+            _Input_text(
+                self.seed,
+                self.Logger,
+                self.FlashMemory,
+                self.CrystalMemory
+            ),
+        ]
         self.latent_moduels = [
-            ]
+        ]
         self.output_moduels = [
-            ]
+        ]
 
     def _orchistrate(self):
         """Orchistrates the entire network's connections"""
@@ -61,4 +62,3 @@ class _Orchistrator():
             for output_mod in self.input_moduels:
                 output_mod._sleeping_fun()
         self.sleeping_fun = sleeping_fun
-
