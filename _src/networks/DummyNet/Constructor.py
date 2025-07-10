@@ -1,7 +1,6 @@
 import os
 import haiku as hk
 import jax
-import jax.numpy as jnp
 import graphviz
 from _src.networks.DummyNet.DummyNet import DummyNet
 

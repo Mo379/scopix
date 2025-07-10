@@ -10,11 +10,11 @@ class _WANDBLogger():
         # logs
         self.log_id = datetime.now().strftime("%Y%m%d-%H%M")
         self.log_dir = os.path.join(
-                os.getcwd(),
-                'logs',
-                'wandb_runs',
-                self.log_id
-            )
+            os.getcwd(),
+            'logs',
+            'wandb_runs',
+            self.log_id
+        )
         self.param_dir = os.path.join(self.log_dir, "params")
         self.img_dir = os.path.join(self.log_dir, "img")
         self.vid_dir = os.path.join(self.log_dir, "vid")
@@ -25,11 +25,11 @@ class _WANDBLogger():
         self._create_dir(self.vid_dir)
         #
         self.run = wandb.init(
-                dir=self.log_dir,
-                project="Athena",
-                name="New",
-                entity="mo379",
-            )
+            dir=self.log_dir,
+            project="Aion",
+            name="New",
+            entity="mo379",
+        )
 
     def _create_dir(self, directory):
         if not os.path.exists(directory):
@@ -45,9 +45,9 @@ class _WANDBLogger():
 
     def _log_arr_video(self, name, arr, full_sys_path):
         imageio.mimsave(
-                os.path.join(self.vid_dir, f"{self.log_id}.gif"),
-                [np.array(img) for i, img in enumerate(arr) if i % 1 == 0],
-                fps=30
+            os.path.join(self.vid_dir, f"{self.log_id}.gif"),
+            [np.array(img) for i, img in enumerate(arr) if i % 1 == 0],
+            fps=30
         )
         self.run.log({
             name: wandb.video(
