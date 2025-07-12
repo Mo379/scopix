@@ -5,8 +5,8 @@ import wandb
 import imageio
 
 
-class _WANDBLogger():
-    def __init__(self):
+class WANDBLogger():
+    def __init__(self, api_key, mode, *args,  **kwargs):
         # logs
         self.log_id = datetime.now().strftime("%Y%m%d-%H%M")
         self.log_dir = os.path.join(
@@ -24,11 +24,13 @@ class _WANDBLogger():
         self._create_dir(self.img_dir)
         self._create_dir(self.vid_dir)
         #
+        wandb.login(key=api_key)
         self.run = wandb.init(
             dir=self.log_dir,
             project="Aion",
             name="New",
             entity="mo379",
+            mode=mode
         )
 
     def _create_dir(self, directory):

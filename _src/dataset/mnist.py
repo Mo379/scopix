@@ -1,6 +1,5 @@
 from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
-from torchvision import transforms
 import jax.numpy as jnp
 import numpy as np
 

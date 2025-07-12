@@ -5,21 +5,22 @@ import graphviz
 from _src.networks.DummyNet.DummyNet import DummyNet
 
 
-class Constructor():
+class DummyNetConstructor():
     def __init__(
         self,
         seed,
-        Logger,
         n_hidden,
         hidden_size,
         output_size,
         batch_dim_size,
         input_dim_size,
+        Logger,
+        *args,
+        **kwargs,
     ):
         """Testing the DummyNet network
         """
         self.seed = seed
-        self.Logger = Logger
         #
         self.n_hidden = n_hidden
         self.hidden_size = hidden_size
@@ -28,8 +29,9 @@ class Constructor():
         self.V = input_dim_size
         #
         self.NetName = DummyNet.NetName
+        self.Logger = Logger
 
-    def _construct(self):
+    def construct(self):
         def net_module(x):
             x = DummyNet(
                 n_hidden=self.n_hidden,
@@ -42,7 +44,7 @@ class Constructor():
         model_init, model_apply = hk.transform(net_module, apply_rng=True)
         model_params = model_init(key, example_batch)
         if self.Logger:
-            self._visualise(key, model_apply, model_params, example_batch)
+            self.visualise(key, model_apply, model_params, example_batch)
             self.Logger._log_img(
                 'Model_graphs',
                 os.path.join(self.Logger.img_dir, self.NetName+'.png')
@@ -50,8 +52,8 @@ class Constructor():
         return model_init, model_apply, model_params
 
     # Visualise the model
-    def _visualise(self, key, model_apply, model_params, batch_input):
-        dot = hk.experimental.to_dot(model_apply)(
+    def visualise(self, key, model_apply, model_params, batch_input):
+        dot = hk.experimental.abstract_to_dot(model_apply)(
             model_params, key, batch_input
         )
         try:
@@ -65,7 +67,7 @@ class Constructor():
             result = False
         return result
 
-    def _log_parameters(self, parameters):
+    def log_parameters(self, parameters):
         if self.Logger:
             for layer in parameters:
                 for sub_params in parameters[layer]:
