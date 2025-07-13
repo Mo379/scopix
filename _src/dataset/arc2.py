@@ -1,11 +1,11 @@
-import matplotlib.pyplot as plt
-from matplotlib import colors
+import json
 
-# ML CORE
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
-import json
+
+import matplotlib.pyplot as plt
+from matplotlib import colors
 
 
 class ArcDataset(Dataset):
@@ -30,13 +30,13 @@ class ArcDataset(Dataset):
     def __len__(self):
         return len(self.input_data)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx, max_length=5):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         index_key = self.task_order[idx]
         input_datapoint = self.input_data[index_key]
-        target_datapoint = self.target_data[index_key] if index_key in self.target_data else {
-        }
+        target_datapoint = self.target_data[index_key] \
+            if index_key in self.target_data else {}
 
         inputs = [self.resize_grid_to_30x30(
             point['input']) for point in input_datapoint['train']]
@@ -47,7 +47,23 @@ class ArcDataset(Dataset):
             point['input']) for point in input_datapoint['test']]
         test_output = [self.resize_grid_to_30x30(
             point) for point in target_datapoint]
+        # Pad or truncate
+        inputs = self._pad_or_truncate(inputs, max_length)
+        outputs = self._pad_or_truncate(outputs, max_length)
+        test_input = self._pad_or_truncate(test_input, max_length)
+        test_output = self._pad_or_truncate(test_output, max_length)
         return inputs, outputs, test_input, test_output
+
+    def _pad_or_truncate(self, lst, max_length):
+        dummy = self.dummy_grid(None)
+        if len(lst) < max_length:
+            lst += [dummy] * (max_length - len(lst))
+        elif len(lst) > max_length:
+            lst = lst[:max_length]
+        return lst
+
+    def dummy_grid(self, grid):
+        return [[10] * 30 for _ in range(30)]
 
     def resize_grid_to_30x30(self, grid):
         new_grid = [[10] * 30 for _ in range(30)]
@@ -85,16 +101,17 @@ def load_arc2(config):
     testing_data = ArcDataset(
         input_path=f'{data_dir}/arc-agi_test_challenges.json',
     )
-    iterator = iter(validation_data)
-    i = 0
-    for inputs, outputs, test_input, test_output in iterator:
-        if i >= 10:
-            break
-        i += 1
-        for iinput, ooutput in zip(inputs, outputs):
-            training_data.plot_grid(iinput)
-            training_data.plot_grid(ooutput)
-            print('\n\n\n\n')
+
+    # iterator = iter(validation_data)
+    # i = 0
+    # for inputs, outputs, test_input, test_output in iterator:
+    #    if i >= 10:
+    #        break
+    #    i += 1
+    #    for iinput, ooutput in zip(inputs, outputs):
+    #        training_data.plot_grid(iinput)
+    #        training_data.plot_grid(ooutput)
+    #        print('\n\n\n\n')
 
     # Create DataLoaders
     train_loader = DataLoader(

@@ -13,6 +13,6 @@ if __name__ == "__main__":
         **configs['model']['DummyNet'],
         Logger=logger
     )
-    print(configs)
-    print(train_set)
-    print(dummy_net_constructor.construct())
+    _, model_apply, model_param = dummy_net_constructor.construct()
+    train_features = next(iter(test_set))
+    print(train_features)
