@@ -1,3 +1,6 @@
 athena_env
 volumes
 logs
+data
+.env
+.DS_Store

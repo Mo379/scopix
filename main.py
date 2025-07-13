@@ -1,7 +1,7 @@
 from pathlib import Path
 from _src.logger.loader import load_logger
 from _src.networks.DummyNet.Constructor import DummyNetConstructor
-from experiments.dummy_net_mnist_toy import load_configs, load_dataset
+from experiments.dummy_net_arc2_toy import load_configs, load_dataset
 
 
 if __name__ == "__main__":

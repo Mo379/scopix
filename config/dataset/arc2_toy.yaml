@@ -1,0 +1,2 @@
+data_dir: ./data/arc2
+batch_size: 8

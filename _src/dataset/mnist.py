@@ -4,6 +4,25 @@ import jax.numpy as jnp
 import numpy as np
 
 
+class MNISTTorchDataset(Dataset):
+    def __init__(self, hf_dataset, transform=None):
+        self.dataset = hf_dataset
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx):
+        item = self.dataset[idx]
+        image = item['image']
+        label = item['label']
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
+
 def load_mnist(config):
     # Load MNIST from huggigface atasets
 
@@ -23,25 +42,8 @@ def load_mnist(config):
 
     # 3️⃣ Torch Dataset wrapper
 
-    class MNISTTorchDataset(Dataset):
-        def __init__(self, hf_dataset, transform=None):
-            self.dataset = hf_dataset
-            self.transform = transform
-
-        def __len__(self):
-            return len(self.dataset)
-
-        def __getitem__(self, idx):
-            item = self.dataset[idx]
-            image = item['image']
-            label = item['label']
-
-            if self.transform:
-                image = self.transform(image)
-
-            return image, label
-
     # Define transforms (optional — normalization, etc.)
+
     def transform(pil_image):
         """
         Takes a PIL image, converts to float32 numpy,

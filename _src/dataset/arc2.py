@@ -1,0 +1,109 @@
+import matplotlib.pyplot as plt
+from matplotlib import colors
+
+# ML CORE
+import numpy as np
+import torch
+from torch.utils.data import Dataset, DataLoader
+import json
+
+
+class ArcDataset(Dataset):
+    """ARC AGI Dataset."""
+
+    def __init__(self, input_path=None, target_path=None):
+        self.input_data = self._load_json(input_path) if input_path else {}
+        self.target_data = self._load_json(target_path) if target_path else {}
+
+        self.ARC_COLORMAP = colors.ListedColormap([
+            '#301934', '#0074D9', '#FF4136', '#2ECC40', '#FFDC00',
+            '#AAAAAA', '#F012BE', '#FF851B', '#7FDBFF', '#870C25', '#000000'  # 11th color for blank
+        ])
+        self.ARC_NORM = colors.Normalize(vmin=0, vmax=11)
+        self.task_order = sorted(
+            self.input_data.keys()) if self.input_data.keys() else False
+
+    def _load_json(self, path):
+        with open(path, 'r') as f:
+            return json.load(f)
+
+    def __len__(self):
+        return len(self.input_data)
+
+    def __getitem__(self, idx):
+        if torch.is_tensor(idx):
+            idx = idx.tolist()
+        index_key = self.task_order[idx]
+        input_datapoint = self.input_data[index_key]
+        target_datapoint = self.target_data[index_key] if index_key in self.target_data else {
+        }
+
+        inputs = [self.resize_grid_to_30x30(
+            point['input']) for point in input_datapoint['train']]
+        outputs = [self.resize_grid_to_30x30(
+            point['output']) for point in input_datapoint['train']]
+
+        test_input = [self.resize_grid_to_30x30(
+            point['input']) for point in input_datapoint['test']]
+        test_output = [self.resize_grid_to_30x30(
+            point) for point in target_datapoint]
+        return inputs, outputs, test_input, test_output
+
+    def resize_grid_to_30x30(self, grid):
+        new_grid = [[10] * 30 for _ in range(30)]
+        original_height = len(grid)
+        original_width = len(grid[0])
+        for i in range(original_height):
+            for j in range(original_width):
+                new_grid[i][j] = grid[i][j]
+        return np.asarray(new_grid)
+
+    def plot_grid(self, grid, title="Grid Visualization"):
+        colormap = self.ARC_COLORMAP
+        norm = self.ARC_NORM
+        plt.figure(figsize=(6, 6))
+        plt.imshow(grid, cmap=colormap, norm=norm)
+        plt.title(title)
+        plt.axis('off')
+        plt.tight_layout()
+        plt.show()
+
+
+def load_arc2(config):
+    data_dir = config["data_dir"]
+    batch_size = config["batch_size"]
+
+    training_data = ArcDataset(
+        input_path=f'{data_dir}/arc-agi_training_challenges.json',
+        target_path=f'{data_dir}/arc-agi_training_solutions.json',
+    )
+
+    validation_data = ArcDataset(
+        input_path=f'{data_dir}/arc-agi_evaluation_challenges.json',
+        target_path=f'{data_dir}/arc-agi_evaluation_solutions.json',
+    )
+    testing_data = ArcDataset(
+        input_path=f'{data_dir}/arc-agi_test_challenges.json',
+    )
+    iterator = iter(validation_data)
+    i = 0
+    for inputs, outputs, test_input, test_output in iterator:
+        if i >= 10:
+            break
+        i += 1
+        for iinput, ooutput in zip(inputs, outputs):
+            training_data.plot_grid(iinput)
+            training_data.plot_grid(ooutput)
+            print('\n\n\n\n')
+
+    # Create DataLoaders
+    train_loader = DataLoader(
+        training_data, batch_size=batch_size, shuffle=True
+    )
+    eval_loader = DataLoader(
+        validation_data, batch_size=batch_size, shuffle=False
+    )
+    test_loader = DataLoader(
+        testing_data, batch_size=batch_size, shuffle=False
+    )
+    return train_loader, eval_loader, test_loader
