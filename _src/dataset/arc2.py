@@ -1,5 +1,6 @@
 import json
 
+import jax.numpy as jnp
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -113,14 +114,25 @@ def load_arc2(config):
     #        training_data.plot_grid(ooutput)
     #        print('\n\n\n\n')
 
-    # Create DataLoaders
+    def collate_fn(batch):
+        # batch is a list of dataset items: [(inputs, outputs, test_input, test_output), …]
+        inputs, outputs, test_inputs, test_outputs = zip(*batch)
+        # stack each into a jnp array
+        inputs = jnp.array(inputs)
+        outputs = jnp.array(outputs)
+        test_inputs = jnp.array(test_inputs)
+        test_outputs = jnp.array(test_outputs)
+        return inputs, outputs, test_inputs, test_outputs
     train_loader = DataLoader(
-        training_data, batch_size=batch_size, shuffle=True
+        training_data, batch_size=batch_size, shuffle=True,
+        collate_fn=collate_fn
     )
     eval_loader = DataLoader(
-        validation_data, batch_size=batch_size, shuffle=False
+        validation_data, batch_size=batch_size, shuffle=False,
+        collate_fn=collate_fn
     )
     test_loader = DataLoader(
-        testing_data, batch_size=batch_size, shuffle=False
+        testing_data, batch_size=batch_size, shuffle=False,
+        collate_fn=collate_fn
     )
     return train_loader, eval_loader, test_loader
