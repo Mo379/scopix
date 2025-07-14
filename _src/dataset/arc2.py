@@ -31,7 +31,7 @@ class ArcDataset(Dataset):
     def __len__(self):
         return len(self.input_data)
 
-    def __getitem__(self, idx, max_length=5):
+    def __getitem__(self, idx, max_length=8):
         if torch.is_tensor(idx):
             idx = idx.tolist()
         index_key = self.task_order[idx]
