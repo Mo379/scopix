@@ -2,7 +2,9 @@ import sys
 from pathlib import Path
 from _src.logger.loader import load_logger
 from _src.networks.DummyNet.Constructor import DummyNetConstructor
-from experiments.dummy_net_arc2_toy import load_configs, load_dataset
+from experiments.dummy_net_arc2_toy import (
+    load_configs, load_dataset, load_model
+)
 import logging as std_logger
 
 
@@ -16,6 +18,7 @@ if __name__ == "__main__":
     configs = load_configs(root)
     train_set, eval_set, test_set = load_dataset(configs['dataset'])
     logger = load_logger(configs['logger'])
+    model_constructor = load_model(configs['model'])
     dummy_net_constructor = DummyNetConstructor(
         **configs['model']['DummyNet'],
         Logger=logger

@@ -7,7 +7,7 @@ from _src.dataset.arc2 import load_arc2
 def load_configs(root):
     dataset_config_path = os.path.join(root, 'config/dataset/arc2_toy.yaml')
     logger_config_path = os.path.join(root, 'config/logger/wandb.yaml')
-    model_config_path = os.path.join(root, 'config/model/dummy_toy.yaml')
+    model_config_path = os.path.join(root, 'config/model/toynet.yaml')
     optimiser_config_path = os.path.join(root, 'config/optimiser/adam.yaml')
 
     with open(dataset_config_path, "r") as f:
@@ -31,8 +31,4 @@ def load_configs(root):
 
 
 def load_dataset(config):
-    return load_arc2(config)
-
-
-def load_model(config):
     return load_arc2(config)
