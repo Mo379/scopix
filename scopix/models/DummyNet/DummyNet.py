@@ -1,38 +1,31 @@
-import jax
-import haiku as hk
+from flax import nnx
+from typing import Any
 
 
-class DummyNet(hk.Module):
+class DummyNet(nnx.Module):
+    """A dummy neural network with residual connections for experimentation."""
+
     NetName = 'DummyNet'
 
     def __init__(
             self,
-            n_hidden,
-            hidden_size,
-            output_size,
-            name='DummyNet'
+            n_hidden: int,
+            hidden_size: int,
+            output_size: int,
+            *,
+            rngs: nnx.Rngs,
+            **kwargs: Any
             ):
-        super().__init__(name=name)
-        self.n_hidden = n_hidden
-        self.hidden_size = hidden_size
-        self.output_size = output_size
+        self.input_linear = nnx.Linear(hidden_size, hidden_size, rngs=rngs)
+        self.hidden_linears = [nnx.Linear(hidden_size, hidden_size, rngs=rngs) for _ in range(n_hidden)]
+        self.output_linear = nnx.Linear(hidden_size, output_size, use_bias=False, rngs=rngs)
 
     def __call__(self, x):
-        x = hk.Linear(
-                output_size=self.hidden_size,
-                name=None,
-            )(x)
-        x_residual = jax.nn.relu(x)
-        for i in range(self.n_hidden):
-            x = hk.Linear(
-                    output_size=self.hidden_size,
-                    name=None,
-                )(x_residual)
-            x = jax.nn.relu(x)
+        x = self.input_linear(x)
+        x_residual = nnx.relu(x)
+        for linear in self.hidden_linears:
+            x = linear(x_residual)
+            x = nnx.relu(x)
             x_residual = x_residual + x
-        x = hk.Linear(
-                output_size=self.output_size,
-                with_bias=False,
-                name=None,
-            )(x_residual)
+        x = self.output_linear(x_residual)
         return x

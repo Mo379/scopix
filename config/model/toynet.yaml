@@ -1,7 +1,0 @@
-ToyNet:
-  seed: 0
-  logger: 'wandb'
-  hidden_size: 32
-  output_size: 3
-  batch_dim_size: 32
-  input_dim_size: 32

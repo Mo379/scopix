@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "scopix"
+version = "0.1.0"
+description = "A library to advance LLMs to the next cognitive processing domain"
+authors = ["Mustafa Omar <mustafa@example.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "scopix"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flax = "^0.8.0"
+jax = "^0.4.0"
+jaxlib = "^0.4.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.0"
+pre-commit = "^3.0.0"
+pytest = "^7.0.0"
+mypy = "^1.0.0"
+nbqa = "^1.0.0"
+black = "^23.0.0"
+flake8 = "^6.0.0"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.0"
+sphinx-rtd-theme = "^2.0"
+myst-parser = "^2.0"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "DJ", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "AIR", "PERF", "FURB", "LOG", "RUF"]
+ignore = ["S101", "COM812", "ISC001"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
